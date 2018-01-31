@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!-- 配置生成器 -->
+<generatorConfiguration>
+
+    <context id="mysql" targetRuntime="org.mybatis.generator.codegen.mybatis3.IntrospectedTableMyBatis3Impl">
+
+        <!-- 是否合并之前生成的文件 true：是 ： false:否 -->
+        <property name="mergeable" value="false"/>
+
+        <!-- 生成Ext插件 -->
+        <plugin type="org.xiaoheshan.plugin.generator.ExtGeneratorPlugin"/>
+
+        <!-- xml是否去除自动生成的注释 true：是 ： false:否 -->
+        <commentGenerator type="org.xiaoheshan.plugin.generator.CommentGeneratorPlugin"/>
+
+        <!-- 数据源配置 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://172.17.0.2:3306/test"
+                        userId="root" password="123456">
+            <!-- mysql获取表信息 -->
+            <property name="useInformationSchema" value="true"/>
+        </jdbcConnection>
+
+        <!-- model类型映射配置 -->
+        <javaTypeResolver >
+            <!-- 是否使用BigDecimal对应DECIMAL和 NUMERIC数据类型 true：是 ： false:否 -->
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!-- model生成配置 -->
+        <javaModelGenerator targetPackage="org.xiaoheshan.piggy.bank.dal.dao.user.model" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaModelGenerator>
+
+        <!-- XML生成配置 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <!-- Mapper接口生成配置 -->
+        <javaClientGenerator targetPackage="org.xiaoheshan.piggy.bank.dal.dao.user" type="XMLMAPPER"
+                             targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!-- table映射配置 -->
+        <table tableName="test_user" domainObjectName="TestUserDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql" type="post" identity="true"/>
+            <!-- 替换列名的表前缀 -->
+            <columnRenamingRule searchString="user_" replaceString=""/>
+        </table>
+
+    </context>
+
+</generatorConfiguration>

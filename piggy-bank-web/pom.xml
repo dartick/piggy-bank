@@ -12,6 +12,15 @@
     <artifactId>piggy-bank-web</artifactId>
 
     <dependencies>
+        <!-- 内部项目依赖 -->
+        <dependency>
+            <groupId>org.xiaoheshan</groupId>
+            <artifactId>piggy-bank-dal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xiaoheshan</groupId>
+            <artifactId>piggy-bank-common</artifactId>
+        </dependency>
         <!-- 集成WEB框架 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -21,6 +30,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <!-- swagger依赖 -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${swgger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${swgger.version}</version>
         </dependency>
     </dependencies>
 
