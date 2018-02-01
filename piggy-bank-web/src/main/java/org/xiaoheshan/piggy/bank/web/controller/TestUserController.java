@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.xiaoheshan.common.model.PageQueryParam;
 import org.xiaoheshan.common.rest.RestPageResult;
-import org.xiaoheshan.common.util.BeanUtils;
+import org.xiaoheshan.common.util.BeanCopier;
 import org.xiaoheshan.piggy.bank.dal.dao.user.TestUserDOMapperExt;
 import org.xiaoheshan.piggy.bank.dal.dao.user.model.TestUserDO;
 import org.xiaoheshan.piggy.bank.dal.dao.user.model.TestUserQueryDO;
@@ -34,9 +34,9 @@ public class TestUserController {
     @PostMapping("/list")
     @ApiOperation("分页查询用户")
     public RestPageResult<TestUserVO> list(@ApiParam("分页查询参数") @RequestBody PageQueryParam queryParam) {
-        TestUserQueryDO queryDO = BeanUtils.instantiateAndCopy(TestUserQueryDO.class, queryParam);
+        TestUserQueryDO queryDO = BeanCopier.instantiateAndCopy(TestUserQueryDO.class, queryParam);
         List<TestUserDO> testUserDOS = testUserDOMapperExt.listUserDOPage(queryDO);
-        List<TestUserVO> testUserVOS = BeanUtils.copyToList(testUserDOS, TestUserVO.class);
+        List<TestUserVO> testUserVOS = BeanCopier.copyToList(testUserDOS, TestUserVO.class);
         Long count = testUserDOMapperExt.countUserDO(queryDO);
         return RestPageResult.<TestUserVO>builder().success(testUserVOS, count).build();
     }

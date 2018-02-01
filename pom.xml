@@ -32,12 +32,6 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- 内部公共项目依赖 -->
-        <dependency>
-            <groupId>org.xiaoheshan</groupId>
-            <artifactId>piggy-bank-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <!-- 依赖管理 -->

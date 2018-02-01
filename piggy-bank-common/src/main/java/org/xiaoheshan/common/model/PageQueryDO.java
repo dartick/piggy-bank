@@ -6,7 +6,7 @@ package org.xiaoheshan.common.model;
  */
 public class PageQueryDO {
 
-    /** 分页查询页码，从1开始 */
+    /** 分页查询页码 */
     private Integer pageIndex;
 
     /** 分页查询页大小 */

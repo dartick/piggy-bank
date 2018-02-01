@@ -1,10 +1,7 @@
 package org.xiaoheshan.common.util;
 
-import org.junit.Test;
-
-import java.util.List;
-
-import static org.junit.Assert.*;
+import org.junit.*;
+import org.junit.rules.TestName;
 
 /**
  * 测试结果
@@ -14,33 +11,56 @@ import static org.junit.Assert.*;
  */
 public class BeanUtilsTest {
 
-    private SourcePojo sourcePojo = new SourcePojo();
-    private int pojoNum = 100000;
+    private static SourcePojo sourcePojo = new SourcePojo();
+    private static int pojoNum = 1000000;
+    private long start = -1;
+    private long end = -1;
+    @Rule
+    public TestName testName = new TestName();
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        System.out.println("All test call times : " + pojoNum);
+    }
+
+    @Before
+    public void testBefore() {
+        start = System.currentTimeMillis();
+    }
+
+    @After
+    public void testAfter() {
+        end = System.currentTimeMillis();
+        System.out.println(testName.getMethodName() + " cost: " + (end - start) + " ms");
+    }
 
     @Test
-    public void testSetterGetter() {
-        long start = System.currentTimeMillis();
+    public void setterGetter() {
         for (int i = 0; i < pojoNum; i++) {
             TargetPojo targetPojo = new TargetPojo();
             targetPojo.setA(sourcePojo.getA());
             targetPojo.setB(sourcePojo.getB());
             targetPojo.setC(sourcePojo.getC());
             targetPojo.setD(sourcePojo.getD());
+            Assert.assertTrue(targetPojo.getA() == 1);
         }
-        long end = System.currentTimeMillis();
-        System.out.println("setter/getter used: " + (end - start) + " ms");
     }
 
     @Test
-    public void testCopyProperties() {
-        long start = System.currentTimeMillis();
+    public void beanUtils() {
         for (int i = 0; i < pojoNum; i++) {
-            BeanUtils.instantiateAndCopy(TargetPojo.class, sourcePojo);
+            TargetPojo targetPojo = BeanUtils.instantiateAndCopy(TargetPojo.class, sourcePojo);
+            Assert.assertTrue(targetPojo.getA() == 1);
         }
-        long end = System.currentTimeMillis();
-        System.out.println("BeanUtils used: " + (end - start) + " ms");
     }
 
+    @Test
+    public void beanCopier() {
+        for (int i = 0; i < pojoNum; i++) {
+            TargetPojo targetPojo = BeanCopier.instantiateAndCopy(TargetPojo.class, sourcePojo);
+            Assert.assertTrue(targetPojo.getA() == 1);
+        }
+    }
 
     @lombok.Data
     public static class SourcePojo {
@@ -48,13 +68,14 @@ public class BeanUtilsTest {
         private Integer b = 1;
         private Integer c = 1;
         private Integer d = 1;
+
     }
 
     @lombok.Data
     public static class TargetPojo {
-        private Integer a;
-        private Integer b;
-        private Integer c;
-        private Integer d;
+        private int a;
+        private int b;
+        private int c;
+        private int d;
     }
 }

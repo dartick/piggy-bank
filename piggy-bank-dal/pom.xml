@@ -12,6 +12,11 @@
     <artifactId>piggy-bank-dal</artifactId>
 
     <dependencies>
+        <!-- 内部项目依赖 -->
+        <dependency>
+            <groupId>org.xiaoheshan</groupId>
+            <artifactId>piggy-bank-common</artifactId>
+        </dependency>
         <!-- mybatis依赖 -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
