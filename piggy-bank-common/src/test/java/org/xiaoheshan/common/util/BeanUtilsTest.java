@@ -58,12 +58,12 @@ public class BeanUtilsTest {
     public void beanCopier() {
         for (int i = 0; i < pojoNum; i++) {
             TargetPojo targetPojo = BeanCopier.instantiateAndCopy(TargetPojo.class, sourcePojo);
-            Assert.assertTrue(targetPojo.getA() == 1);
+            Assert.assertTrue(targetPojo.getE() == 1);
         }
     }
 
     @lombok.Data
-    public static class SourcePojo {
+    public static class SourcePojo extends SourcePojoParent {
         private Integer a = 1;
         private Integer b = 1;
         private Integer c = 1;
@@ -72,10 +72,24 @@ public class BeanUtilsTest {
     }
 
     @lombok.Data
-    public static class TargetPojo {
-        private int a;
-        private int b;
-        private int c;
-        private int d;
+    public static class SourcePojoParent {
+        private Integer e = 1;
+        private Integer f = 1;
     }
+
+    @lombok.Data
+    public static class TargetPojo extends TargetPojoParent {
+        private Integer a;
+        private Integer b;
+        private Integer c;
+        private Integer d;
+    }
+
+    @lombok.Data
+    public static class TargetPojoParent {
+        private Integer e;
+        private Integer f;
+    }
+
+
 }
