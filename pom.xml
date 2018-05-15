@@ -62,6 +62,16 @@
                 <artifactId>piggy-bank-netty</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.xiaoheshan</groupId>
+                <artifactId>piggy-bank-redis</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xiaoheshan</groupId>
+                <artifactId>piggy-bank-basis</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -71,6 +81,8 @@
         <module>piggy-bank-dal</module>
         <module>piggy-bank-common</module>
         <module>piggy-bank-netty</module>
+        <module>piggy-bank-basis</module>
+        <module>piggy-bank-redis</module>
     </modules>
     
 </project>
