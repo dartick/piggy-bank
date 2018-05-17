@@ -1,4 +1,4 @@
-package org.xiaoheshan.piggy.bank.redis;
+package org.xiaoheshan.piggy.bank.redis.dist.script;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ import java.util.concurrent.locks.LockSupport;
  * @author _Chf
  * @since 05-10-2018
  */
-@Component
+//@Component
 public class RedisDistLock {
 
     private final Logger logger = LoggerFactory.getLogger(RedisDistLock.class);
@@ -41,16 +41,24 @@ public class RedisDistLock {
             if (tryLock(key, expire, unit)) {
                 return;
             }
+            /* 最大等待时长500ms */
             int max = 500000000;
+            /* 最小等待时长2ms */
             int min = 2000000;
+            /* 使用随机时长，防止同时唤醒导致再次等待 */
             LockSupport.parkNanos(rnd.nextInt(max) % (max - min + 1) + max);
         }
     }
 
     public boolean tryLock(String key, long expire, TimeUnit unit) {
-        String isSucceed = redisTemplate.execute(lockScript, Collections.singletonList(REDIS_LOCK_KEY_PREFIX + key), UID_HOLDER.get(), String.valueOf(unit.toMillis(expire)));
-        if ("OK".equals(isSucceed)) {
-            return true;
+        try {
+            String isSucceed = redisTemplate.execute(lockScript, Collections.singletonList(REDIS_LOCK_KEY_PREFIX + key), UID_HOLDER.get(), String.valueOf(unit.toMillis(expire)));
+            if ("OK".equals(isSucceed)) {
+                return true;
+            }
+        } catch (Exception e) {
+            UID_HOLDER.remove();
+            throw new RuntimeException(e);
         }
         UID_HOLDER.remove();
         return false;

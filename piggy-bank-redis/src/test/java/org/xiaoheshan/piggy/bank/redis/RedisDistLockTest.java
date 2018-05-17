@@ -1,14 +1,11 @@
 package org.xiaoheshan.piggy.bank.redis;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.xiaoheshan.piggy.bank.redis.dist.api.RedisDistLock;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -17,9 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @author _Chf
  * @since 05-11-2018
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class RedisDistLockTest {
+public class RedisDistLockTest extends BaseTest {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -29,18 +24,7 @@ public class RedisDistLockTest {
 
     @Before
     public void setUp() throws Exception {
-        System.out.println("================ 测试开始 ================");
         this.redisTemplate.execute(new DefaultRedisScript<Void>("redis.call('flushall')", Void.class),null);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.out.println("================ 测试结束 ================");
-    }
-
-    @Test
-    public void testRedis() {
-        redisTemplate.opsForValue().set("test", "123456", 30, TimeUnit.SECONDS);
     }
 
     @Test
