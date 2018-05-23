@@ -83,6 +83,7 @@
         <module>piggy-bank-netty</module>
         <module>piggy-bank-basis</module>
         <module>piggy-bank-redis</module>
+        <module>piggy-bank-dubbo</module>
     </modules>
     
 </project>

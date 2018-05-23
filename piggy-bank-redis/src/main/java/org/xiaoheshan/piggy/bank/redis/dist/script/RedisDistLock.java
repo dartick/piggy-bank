@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.util.Collections;
 import java.util.Random;
@@ -18,14 +19,14 @@ import java.util.concurrent.locks.LockSupport;
  * @author _Chf
  * @since 05-10-2018
  */
-//@Component
+@Component
 public class RedisDistLock {
 
     private final Logger logger = LoggerFactory.getLogger(RedisDistLock.class);
 
     private static final String REDIS_LOCK_KEY_PREFIX = "redis-lock-";
     private static final ThreadLocal<String> UID_HOLDER = ThreadLocal.withInitial(() -> UUID.randomUUID().toString());
-    private static final Random rnd = new Random();
+    private static final Random RND = new Random();
 
     private final StringRedisTemplate redisTemplate;
     private final RedisScript<String> lockScript = new DefaultRedisScript<String>("return redis.call('SET', KEYS[1], ARGV[1], 'NX', 'PX', ARGV[2])", String.class);
@@ -34,6 +35,10 @@ public class RedisDistLock {
     @Autowired
     public RedisDistLock(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
+    }
+
+    public void lock(String key) {
+        this.lock(key, 30, TimeUnit.SECONDS);
     }
 
     public void lock(String key, long expire, TimeUnit unit) {
@@ -45,12 +50,14 @@ public class RedisDistLock {
             int max = 500000000;
             /* 最小等待时长2ms */
             int min = 2000000;
-            /* 使用随机时长，防止同时唤醒导致再次等待 */
-            LockSupport.parkNanos(rnd.nextInt(max) % (max - min + 1) + max);
+            /* 使用随机时长，避免惊群效应 */
+            LockSupport.parkNanos(RND.nextInt(max) % (max - min + 1) + max);
         }
     }
 
     public boolean tryLock(String key, long expire, TimeUnit unit) {
+        Assert.notNull(key, "key must not be null");
+        Assert.notNull(unit, "unit must not be null");
         try {
             String isSucceed = redisTemplate.execute(lockScript, Collections.singletonList(REDIS_LOCK_KEY_PREFIX + key), UID_HOLDER.get(), String.valueOf(unit.toMillis(expire)));
             if ("OK".equals(isSucceed)) {
@@ -65,6 +72,7 @@ public class RedisDistLock {
     }
 
     public void unlock(String key) {
+        Assert.notNull(key, "key must not be null");
         try {
             redisTemplate.execute(unLockScript, Collections.singletonList(REDIS_LOCK_KEY_PREFIX + key), UID_HOLDER.get());
         } finally {

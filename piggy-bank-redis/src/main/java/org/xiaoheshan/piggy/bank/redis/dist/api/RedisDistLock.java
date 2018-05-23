@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
@@ -26,17 +27,21 @@ import java.util.concurrent.locks.LockSupport;
 @Component
 public class RedisDistLock {
 
-    private final Logger logger = LoggerFactory.getLogger(org.xiaoheshan.piggy.bank.redis.dist.script.RedisDistLock.class);
+    private final Logger logger = LoggerFactory.getLogger(RedisDistLock.class);
 
     private static final String REDIS_LOCK_KEY_PREFIX = "redis-lock-";
     private static final ThreadLocal<String> UID_HOLDER = ThreadLocal.withInitial(() -> UUID.randomUUID().toString());
-    private static final Random rnd = new Random();
+    private static final Random RND = new Random();
 
     private final StringRedisTemplate redisTemplate;
 
     @Autowired
     public RedisDistLock(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
+    }
+
+    public void lock(String key) {
+        this.lock(key, 30, TimeUnit.SECONDS);
     }
 
     public void lock(String key, long expire, TimeUnit unit) {
@@ -48,16 +53,18 @@ public class RedisDistLock {
             int max = 500000000;
             /* 最小等待时长2ms */
             int min = 2000000;
-            /* 使用随机时长，防止同时唤醒导致再次等待 */
-            LockSupport.parkNanos(rnd.nextInt(max) % (max - min + 1) + max);
+            /* 使用随机时长，避免惊群效应 */
+            LockSupport.parkNanos(RND.nextInt(max) % (max - min + 1) + max);
         }
     }
 
     public boolean tryLock(String key, long expire, TimeUnit unit) {
+        Assert.notNull(key, "key must not be null");
+        Assert.notNull(unit, "unit must not be null");
         try {
             Boolean isSucceed = redisTemplate.execute((RedisCallback<Boolean>) connection -> {
                 Jedis jedis = (Jedis) connection.getNativeConnection();
-                String result = jedis.set(key, UID_HOLDER.get(), "NX", "PX", unit.toMillis(expire));
+                String result = jedis.set(REDIS_LOCK_KEY_PREFIX + key, UID_HOLDER.get(), "NX", "PX", unit.toMillis(expire));
                 return "OK".equals(result);
             });
             if (Optional.ofNullable(isSucceed).orElse(false)) {
@@ -73,15 +80,16 @@ public class RedisDistLock {
 
     @SuppressWarnings("unchecked")
     public void unlock(String key) {
+        Assert.notNull(key, "key must not be null");
         try {
             Boolean isSucceed = redisTemplate.execute(new SessionCallback<Boolean>() {
                 @Override
                 public <K, V> Boolean execute(RedisOperations<K, V> operations) throws DataAccessException {
-                    redisTemplate.watch(key);
-                    String uuid = redisTemplate.opsForValue().get(key);
+                    redisTemplate.watch(REDIS_LOCK_KEY_PREFIX + key);
+                    String uuid = redisTemplate.opsForValue().get(REDIS_LOCK_KEY_PREFIX + key);
                     if (UID_HOLDER.get().equals(uuid)) {
                         redisTemplate.multi();
-                        redisTemplate.delete(key);
+                        redisTemplate.delete(REDIS_LOCK_KEY_PREFIX + key);
                     }
                     List<Object> result = redisTemplate.exec();
                     return !CollectionUtils.isEmpty(result);
