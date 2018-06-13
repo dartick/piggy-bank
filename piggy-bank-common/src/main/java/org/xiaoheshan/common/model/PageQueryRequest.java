@@ -4,7 +4,7 @@ package org.xiaoheshan.common.model;
  * @author _Chf
  * @since 01-30-2018
  */
-public class PageQueryParam {
+public class PageQueryRequest {
 
     /** 分页查询页码，从1开始 */
     private Integer pageIndex = 1;

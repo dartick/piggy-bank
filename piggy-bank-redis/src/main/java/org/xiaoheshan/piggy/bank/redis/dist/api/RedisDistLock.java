@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
@@ -40,6 +41,32 @@ public class RedisDistLock {
         this.redisTemplate = redisTemplate;
     }
 
+    public <T> T sync(String key, Callable<T> callable) {
+        T result = null;
+        try {
+            this.lock(key);
+            result = callable.call();
+        } catch (Exception e) {
+            logger.error("sync failed in redis distributed lock.", e);
+        } finally {
+            this.unlock(key);
+        }
+        return result;
+    }
+
+    public <T> T sync(String key, long expire, TimeUnit unit, Callable<T> callable) {
+        T result = null;
+        try {
+            this.lock(key, expire, unit);
+            result = callable.call();
+        } catch (Exception e) {
+            logger.error("sync failed in redis distributed lock.", e);
+        } finally {
+            this.unlock(key);
+        }
+        return result;
+    }
+
     public void lock(String key) {
         this.lock(key, 30, TimeUnit.SECONDS);
     }
@@ -50,9 +77,9 @@ public class RedisDistLock {
                 return;
             }
             /* 最大等待时长500ms */
-            int max = 500000000;
+            int max = 500_000_000;
             /* 最小等待时长2ms */
-            int min = 2000000;
+            int min = 2_000_000;
             /* 使用随机时长，避免惊群效应 */
             LockSupport.parkNanos(RND.nextInt(max) % (max - min + 1) + max);
         }
