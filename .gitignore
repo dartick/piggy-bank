@@ -24,3 +24,7 @@ hs_err_pid*
 # idea
 .idea/
 *.iml
+
+# xmind
+.fr-An5UnP/
+.fr-tpyjAa/

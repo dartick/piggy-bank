@@ -30,7 +30,7 @@ public class RedisDistLock {
 
     private final Logger logger = LoggerFactory.getLogger(RedisDistLock.class);
 
-    private static final String REDIS_LOCK_KEY_PREFIX = "redis-lock-";
+    private static final String REDIS_LOCK_KEY_PREFIX = "application-code:redis:lock:";
     private static final ThreadLocal<String> UID_HOLDER = ThreadLocal.withInitial(() -> UUID.randomUUID().toString());
     private static final Random RND = new Random();
 
