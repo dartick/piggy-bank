@@ -84,6 +84,8 @@
         <module>piggy-bank-basis</module>
         <module>piggy-bank-redis</module>
         <module>piggy-bank-dubbo</module>
+        <module>piggy-bank-vavr</module>
+        <module>piggy-bank-rocketmq</module>
     </modules>
     
 </project>
