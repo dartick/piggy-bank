@@ -98,6 +98,12 @@ protected final boolean compareAndSetState(int expect, int update {
 让子类提供tryAcquire和tryRelease方法来控制acquire和release操作。
 当同步状态满足时，tryAcquire方法必须返回true，而当新的同步状态允许后续acquire时，tryRelease方法也必须返回true。这些方法都接受一个int类型的参数用于传递想要的状态。例如：可重入锁中，当某个线程从条件等待中返回，然后重新获取锁时，为了重新建立循环计数的场景。很多同步器并不需要这样一个参数，因此忽略它即可。
 
+```
+tryAcquire和tryRelease方法对子类开放, 以实现不同的需求
+```
+
+
+
 ## 资料引用
 
 1.  [同步框架设计论文](http://gee.cs.oswego.edu/dl/papers/aqs.pdf)

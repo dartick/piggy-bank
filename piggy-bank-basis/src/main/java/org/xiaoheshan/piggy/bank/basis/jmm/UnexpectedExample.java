@@ -12,14 +12,21 @@ public class UnexpectedExample {
     public int r2 = 0;
 
     public void fun1() {
-        x = 1;
-        r1 = y;
+        x = 1; // 1
+        r1 = y; // 2
     }
 
     public void fun2() {
-        y = 1;
-        r2 = x;
+        y = 1; // 3
+        r2 = x;  // 4
     }
+    /**
+     * 1. x = 1 , r1 = 0, y = 1, r2 = 1
+     * 2. x = 1, y = 1, r1 = 1, r2 = 1
+     * 3. y = 1, r2 = 0, x = 1, r1 = 1
+     *
+     * r1= 0 , r2 = 0
+     */
 
     public static void main(String[] args) throws InterruptedException {
         for (int i = 0; i < 20000; i++) {
