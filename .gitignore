@@ -28,3 +28,5 @@ hs_err_pid*
 # xmind
 ./xmind/fr-An5UnP/
 ./xmind/fr-tpyjAa/
+
+target/
