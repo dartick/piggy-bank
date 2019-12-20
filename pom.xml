@@ -86,6 +86,7 @@
         <module>piggy-bank-dubbo</module>
         <module>piggy-bank-vavr</module>
         <module>piggy-bank-rocketmq</module>
+        <module>piggy-bank-oj</module>
     </modules>
     
 </project>
